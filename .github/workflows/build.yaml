@@ -102,7 +102,7 @@ jobs:
                   context: .
                   file: Dockerfile.layers
                   push: true
-                  tags: ghcr.io/training360/employees-cd-training-2025-10-13:latest,ghcr.io/training360/employees-cd-training-2025-10-13:${{ env.VERSION }}"
+                  tags: ghcr.io/balintnyirfa/employees:latest,ghcr.io/balintnyirfa/employees:${{ env.VERSION }}"
 
     deploy:
         runs-on: ubuntu-latest
