@@ -3,14 +3,15 @@ name: Build
 on:
     push:
         branches:
-            - main
+            - master
     workflow_dispatch:
 
 jobs:
     build:
         runs-on: ubuntu-latest
         outputs:
-            version: ${{ steps.set-version.outputs.version }}
+            version: ${{ steps.set_version.outputs.version }}
+
         steps:
             - name: Checkout code
               uses: actions/checkout@v5
@@ -20,11 +21,12 @@ jobs:
                   distribution: "temurin"
                   java-version: "21"
                   cache: "maven"
-            - name: Set version number
-              id: set-version
+            - name: Set version
+              id: set_version
               run: |
+                  VERSION="1.0.0-${GITHUB_RUN_NUMBER}"
+                  echo "Version: $VERSION"            
                   echo "VERSION=$VERSION" >> $GITHUB_ENV
-                  echo "Version: $VERSION"
             - name: Build with Maven
               run: ./mvnw -B package -Drevision=$VERSION
             - name: Archive production artifacts
@@ -86,8 +88,8 @@ jobs:
                   path: target/
             - name: Read version from build job
               run: |
-                echo "VERSION=${{ needs.build.outputs.version }}" >> $GITHUB_ENV
-                echo "Set version to $VERSION"
+                  echo "VERSION=${{ needs.build.outputs.version }}" >> $GITHUB_ENV
+                  echo "Version from build job: $VERSION"
             - name: Login to GitHub Container Registry
               uses: docker/login-action@v3
               with:
@@ -100,9 +102,7 @@ jobs:
                   context: .
                   file: Dockerfile.layers
                   push: true
-                  tags: |
-                    ghcr.io/training360/employees-cd-training-2025-10-13:latest
-                    ghcr.io/training360/employees-cd-training-2025-10-13:${{ env.VERSION }}
+                  tags: ghcr.io/training360/employees-cd-training-2025-10-13:latest,ghcr.io/training360/employees-cd-training-2025-10-13:${{ env.VERSION }}"
 
     deploy:
         runs-on: ubuntu-latest
