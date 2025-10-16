@@ -9,5 +9,12 @@ jobs:
     build:
         runs-on: ubuntu-latest
         steps:
-            - name: Say Hello
-              run: echo "Hello Github Actions!"
+            - name: Checkout code
+              uses: actions/checkout@v5
+            - name: Set up Java
+              uses: actions/setup-java@v5
+              with:
+                  distribution: 'temurin'
+                  java-version: '21'
+            - name: Build with Maven
+              run: ./mvnw -B package
